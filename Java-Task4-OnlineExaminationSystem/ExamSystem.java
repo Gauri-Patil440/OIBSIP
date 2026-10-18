@@ -10,51 +10,28 @@ public class ExamSystem {
         this.scanner = scanner;
 
         questions = new Question[] {
+            new Question("Which language runs on the JVM?",
+                new String[]{"Python", "Java", "HTML", "CSS"}, 'B'),
 
-            new Question(
-                "Which language runs on the JVM?",
-                new String[]{
-                    "Python", "Java", "HTML", "CSS"
-                }, 'B'
-            ),
+            new Question("Which keyword creates an object?",
+                new String[]{"class", "void", "new", "static"}, 'C'),
 
-            new Question(
-                "Which keyword creates an object?",
-                new String[]{
-                    "class", "void", "new", "static"
-                }, 'C'
-            ),
+            new Question("Which is not a primitive type in Java?",
+                new String[]{"int", "boolean", "char", "String"}, 'D'),
 
-            new Question(
-                "Which is not a primitive type in Java?",
-                new String[]{
-                    "int", "boolean", "char", "String"
-                }, 'D'
-            ),
+            new Question("Which loop executes at least once?",
+                new String[]{"for", "while", "do-while", "nested for"}, 'C'),
 
-            new Question(
-                "Which loop executes at least once?",
-                new String[]{
-                    "for", "while", "do-while", "nested for"
-                }, 'C'
-            ),
-
-            new Question(
-                "Which method starts a Java program?",
-                new String[]{
-                    "start()", "main()", "run()", "init()"
-                }, 'B'
-            )
+            new Question("Which method starts a Java program?",
+                new String[]{"start()", "main()", "run()", "init()"}, 'B')
         };
     }
 
     public void startExam(String studentName) {
-
         int score = 0;
         int attempted = 0;
 
-        long startTime = System.currentTimeMillis();
-        long endTime = startTime
+        long endTime = System.currentTimeMillis()
                 + timeLimitSeconds * 1000L;
 
         System.out.println("\n================================");
@@ -62,47 +39,58 @@ public class ExamSystem {
         System.out.println("================================");
         System.out.println("Student: " + studentName);
         System.out.println("Total Questions: " + questions.length);
-        System.out.println("Time Limit: "
-                + timeLimitSeconds + " seconds");
-        System.out.println("Each correct answer carries 1 mark.");
-        System.out.println("Enter A, B, C or D.");
+        System.out.println("Time Limit: " + timeLimitSeconds + " seconds");
+        System.out.println("Enter A/B/C/D or the full answer.");
 
         for (int i = 0; i < questions.length; i++) {
-
-            long remaining =
-                    endTime - System.currentTimeMillis();
+            long remaining = endTime - System.currentTimeMillis();
 
             if (remaining <= 0) {
-                System.out.println("\nTime is over!");
+                System.out.println("Time is over!");
                 break;
             }
 
             System.out.println("\nTime remaining: "
-                    + (remaining / 1000) + " seconds");
+                    + remaining / 1000 + " seconds");
 
             questions[i].displayQuestion(i + 1);
-
             System.out.print("Your answer: ");
+
             String input = scanner.nextLine().trim();
+            String normalized = input.toUpperCase();
 
             if (System.currentTimeMillis() >= endTime) {
-                System.out.println(
-                        "Time is over. Answer not counted.");
+                System.out.println("Time is over. Answer not counted.");
                 break;
             }
 
-            if (input.length() != 1
-                    || "ABCD".indexOf(
-                    input.toUpperCase().charAt(0)) == -1) {
+            switch (normalized) {
+                case "JAVA":
+                    normalized = "B";
+                    break;
+                case "NEW":
+                    normalized = "C";
+                    break;
+                case "STRING":
+                    normalized = "D";
+                    break;
+                case "DO-WHILE":
+                    normalized = "C";
+                    break;
+                case "MAIN()":
+                    normalized = "B";
+                    break;
+            }
+
+            if (normalized.length() != 1
+                    || "ABCD".indexOf(normalized.charAt(0)) == -1) {
                 System.out.println(
-                        "Invalid answer. No mark awarded.");
+                        "Invalid answer. Enter A, B, C or D.");
                 continue;
             }
 
             attempted++;
-
-            char answer =
-                    Character.toUpperCase(input.charAt(0));
+            char answer = normalized.charAt(0);
 
             if (questions[i].isCorrect(answer)) {
                 System.out.println("Correct answer!");
@@ -117,27 +105,20 @@ public class ExamSystem {
 
     private void showResult(String studentName,
                             int score, int attempted) {
-
         System.out.println("\n================================");
         System.out.println("          EXAM RESULT");
         System.out.println("================================");
-
         System.out.println("Student: " + studentName);
         System.out.println("Total Questions: " + questions.length);
         System.out.println("Attempted: " + attempted);
         System.out.println("Correct Answers: " + score);
-
         System.out.println("Incorrect/Unanswered: "
                 + (questions.length - score));
-
         System.out.println("Final Score: "
                 + score + "/" + questions.length);
 
-        double percentage =
-                score * 100.0 / questions.length;
-
-        System.out.printf("Percentage: %.2f%%%n",
-                percentage);
+        double percentage = score * 100.0 / questions.length;
+        System.out.printf("Percentage: %.2f%%%n", percentage);
 
         if (percentage >= 40) {
             System.out.println("Result: PASS");
